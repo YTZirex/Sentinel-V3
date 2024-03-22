@@ -1,0 +1,40 @@
+const GuildConfig = require("../../schemas/guildConfig");
+const UserPreferences = require("../../schemas/userPreferences");
+
+module.exports = {
+  data: {
+    name: "test",
+    name_localizations: {
+      fr: "testfr",
+    },
+    description: "Get a random test.",
+    description_localizations: {
+      fr: "Obtenir un test aléatoire.",
+    },
+    integration_types: [0, 1],
+    contexts: [0, 1, 2],
+  },
+  premium: false,
+  cooldown: 3,
+  dev: false,
+  async execute(interaction) {
+    let preferences;
+    if (interaction.guild == null) {
+      preferences = await UserPreferences.findOne({
+        id: interaction.user.id,
+      });
+    } else {
+      preferences = await GuildConfig.findOne({
+        id: interaction.guild.id,
+      });
+    }
+
+    return interaction.reply(
+      `${
+        preferences && preferences.language === "fr"
+          ? "test français"
+          : "english test"
+      }`
+    );
+  },
+};

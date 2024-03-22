@@ -1,0 +1,24 @@
+{
+  "name": "sentinel-v3",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "mattsoftwares",
+  "license": "ISC",
+  "dependencies": {
+    "@types/ms": "^0.7.34",
+    "ascii-table": "^0.0.9",
+    "axios": "^1.6.8",
+    "colors": "^1.4.0",
+    "deepl-client": "^1.1.4",
+    "discord-gamecord": "^4.4.1",
+    "discord.js": "^14.14.1",
+    "mongoose": "^8.2.2",
+    "weather-js": "^2.0.0"
+  }
+}
