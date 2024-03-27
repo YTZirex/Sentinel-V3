@@ -10,7 +10,7 @@ module.exports = {
           {
             color: 0x6666ff,
             title: "Coucou!",
-            thumbnail: { url: msg.client.user.displayAvatarURL() },
+            thumbnail : { url: msg.client.user.displayAvatarURL() },
             description: `Je suis Sentinel V3! La futur version de Sentinel.\n\nActuellement je ne propose aucune commandes disponibles au public car je suis en développement. Mais je donnerais des informations sur moi bientôt :shushing_face:`,
           },
         ],

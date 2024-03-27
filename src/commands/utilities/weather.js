@@ -57,20 +57,8 @@ module.exports = {
     ],
   },
   async execute(interaction) {
-    let preferences;
-    if (interaction.guild == null) {
-      preferences = await UserPreferences.findOne({
-        id: interaction.user.id,
-      });
-    } else {
-      preferences = await GuildConfig.findOne({
-        id: interaction.guild.id,
-      });
-    }
     let loc = interaction.options.getString("location");
     let units = interaction.options.getString("units");
-
-    let guild = await GuildConfig.findOne({ id: interaction.guildId });
 
     await interaction.deferReply();
 
@@ -83,12 +71,9 @@ module.exports = {
               embeds: [
                 {
                   color: 0xff6666,
-                  title:
-                    preferences && preferences.language === "fr"
-                      ? "Oups!"
-                      : "Oops!",
+                  title: interaction.locale === "fr" ? "Oups!" : "Oops!",
                   description:
-                    preferences && preferences.language === "fr"
+                    interaction.locale === "fr"
                       ? "Une erreur est survenue. Veuillez réessayer plus tard."
                       : "An error occured. Please try again later.",
                 },
@@ -100,12 +85,9 @@ module.exports = {
                 embeds: [
                   {
                     color: 0xff6666,
-                    title:
-                      preferences && preferences.language === "fr"
-                        ? "Oups!"
-                        : "Oops!",
+                    title: interaction.locale === "fr" ? "Oups!" : "Oops!",
                     description:
-                      preferences && preferences.language === "fr"
+                      interaction.locale === "fr"
                         ? `Je n'ai pas pu trouver la météo de **${loc}**.`
                         : `I couldn't find the weather of **${loc}**.`,
                   },
@@ -120,8 +102,7 @@ module.exports = {
               const wind = result[0].current.winddisplay;
               const day = result[0].current.day;
               const alert =
-                result[0].current.alert ||
-                (preferences && preferences.language === "fr")
+                result[0].current.alert || interaction.locale === "fr"
                   ? "Aucune"
                   : "None";
 
@@ -130,7 +111,7 @@ module.exports = {
                   {
                     color: 0x6666ff,
                     title:
-                      preferences && preferences.language === "fr"
+                      interaction.locale === "fr"
                         ? `Météo de **${loc}**`
                         : `Weather of **${loc}**`,
                     thumbnail: {
@@ -139,43 +120,42 @@ module.exports = {
                     fields: [
                       {
                         name:
-                          preferences && preferences.language === "fr"
+                          interaction.locale === "fr"
                             ? "Température"
                             : "Temperature",
                         value: units === "C" ? `${temp}°C` : `${temp}°F`,
                       },
                       {
                         name:
-                          preferences && preferences.language === "fr"
+                          interaction.locale === "fr"
                             ? "Ressenti"
                             : "Feels Like",
                         value:
                           units === "C" ? `${feelsLike}°C` : `${feelsLike}°F`,
                       },
                       {
-                        name:
-                          preferences && preferences.language === "fr"
-                            ? "Météo"
-                            : "Weather",
+                        name: interaction.locale === "fr" ? "Météo" : "Weather",
                         value:
-                          preferences && preferences.language === "fr"
-                            ? `${await (
-                                await translate({
-                                  auth_key:
-                                    "01be6c49-b75d-4c6f-b0e7-1cb6c8ddc8bd:fx",
-                                  target_lang: Language.French,
-                                  text: type,
-                                })
-                              ).translations[0].text}`
+                          interaction.locale === "fr"
+                            ? `${
+                                (
+                                  await translate({
+                                    auth_key:
+                                      "01be6c49-b75d-4c6f-b0e7-1cb6c8ddc8bd:fx",
+                                    target_lang: Language.French,
+                                    text: type,
+                                  })
+                                ).translations[0].text
+                              }`
                             : `${type}`,
                       },
                       {
                         name:
-                          preferences && preferences.language === "fr"
+                          interaction.locale === "fr"
                             ? "Alertes Actuelles"
                             : "Current Alerts",
                         value:
-                          preferences && preferences.language === "fr"
+                          interaction.locale === "fr"
                             ? `${
                                 alert === "Aucune"
                                   ? "Aucune"
@@ -192,11 +172,11 @@ module.exports = {
                       },
                       {
                         name:
-                          preferences && preferences.language === "fr"
+                          interaction.locale === "fr"
                             ? "Jour De La Semaine"
                             : "Week Day",
                         value:
-                          preferences && preferences.language === "fr"
+                          interaction.locale === "fr"
                             ? `${await (
                                 await translate({
                                   auth_key:
@@ -209,11 +189,11 @@ module.exports = {
                       },
                       {
                         name:
-                          preferences && preferences.language === "fr"
+                          interaction.locale === "fr"
                             ? "Vitesse & Direction Du Vent"
                             : "Wind Speed & Direction",
                         value:
-                          preferences && preferences.language === "fr"
+                          interaction.locale === "fr"
                             ? `${
                                 (
                                   await translate({

@@ -33,16 +33,6 @@ module.exports = {
     ],
   },
   async execute(interaction) {
-    let preferences;
-    if (interaction.guild == null) {
-      preferences = await UserPreferences.findOne({
-        id: interaction.user.id,
-      });
-    } else {
-      preferences = await GuildConfig.findOne({
-        id: interaction.guild.id,
-      });
-    }
     let apiUrl = `https://nekos.life/api/v2/img/kiss`;
     let user = interaction.options.getUser("user");
     await interaction.deferReply();
@@ -54,7 +44,7 @@ module.exports = {
       if (!user || interaction.user.id === user.id)
         return interaction.editReply({
           content:
-            preferences && preferences.language === "fr"
+            interaction.locale === "fr"
               ? `${interaction.user} s'est embrassé lui même :pensive:`
               : `${interaction.user} kissed himself :pensive:`,
           embeds: [
@@ -68,7 +58,7 @@ module.exports = {
 
       return interaction.editReply({
         content:
-          preferences && preferences.language === "fr"
+          interaction.locale === "fr"
             ? `${interaction.user} a embrassé ${user}`
             : `${interaction.user} kissed ${user}`,
         embeds: [
@@ -82,7 +72,7 @@ module.exports = {
     } catch (err) {
       console.log(err);
       return interaction.editReply(
-        preferences && preferences.language === "fr"
+        interaction.locale === "fr"
           ? "Une erreur est survenue en essayant d'embrasser."
           : `An error occured while trying to kiss.`
       );
