@@ -3,6 +3,7 @@ const { Language, TranslationParameters, translate } = require("deepl-client");
 const GuildConfig = require("../../schemas/guildConfig");
 const UserPreferences = require("../../schemas/userPreferences");
 const { ApplicationCommandOptionType } = require("discord.js");
+const CommandCounter = require("../../schemas/commandCounter");
 
 module.exports = {
   cooldown: 5,
@@ -59,6 +60,13 @@ module.exports = {
   async execute(interaction) {
     let loc = interaction.options.getString("location");
     let units = interaction.options.getString("units");
+
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.weather.used += 1;
+    await commandCounter.save();
 
     await interaction.deferReply();
 

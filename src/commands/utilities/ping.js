@@ -1,3 +1,5 @@
+const CommandCounter = require("../../schemas/commandCounter");
+
 module.exports = {
   data: {
     name: "ping",
@@ -12,6 +14,12 @@ module.exports = {
   dev: false,
   premium: false,
   async execute(interaction) {
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.ping.used += 1;
+    await commandCounter.save();
     const start = performance.now();
     const apiLatency = interaction.client.ws.ping;
 

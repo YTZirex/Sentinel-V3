@@ -1,6 +1,7 @@
 const { Events, Collection } = require("discord.js");
 const mConfig = require("../../../data/messageConfig.json");
 const UserPreferences = require("../../schemas/userPreferences");
+const BlacklistedUser = require("../../schemas/blacklistedUser");
 module.exports = {
   name: Events.InteractionCreate,
   once: false,
@@ -52,7 +53,94 @@ module.exports = {
           });
         }
       }
+
+      let blacklistedUser = await BlacklistedUser.findOne({
+        id: interaction.user.id,
+      });
+
+      if (!blacklistedUser)
+        blacklistedUser = await BlacklistedUser.create({
+          id: interaction.user.id,
+          blacklisted: false,
+          reason: "None",
+          moderator: "None",
+        });
+
+      if (blacklistedUser && blacklistedUser.blacklisted === true) {
+        return interaction.reply({
+          embeds: [
+            {
+              color: 0xff6666,
+
+              title:
+                interaction.locale === "fr"
+                  ? "Vous êtes actuellement blacklist de Sentinel. Pour contester votre sanction, veuillez rejoindre notre Support."
+                  : "You are currently blacklisted from Sentinel. To appeal, please join our Support.",
+              fields: [
+                {
+                  name: interaction.locale === "fr" ? "Raison" : "Reason",
+                  value: `${blacklistedUser.reason}`,
+                },
+                {
+                  name:
+                    interaction.locale === "fr" ? "Modérateur" : "Moderator",
+                  value: `${blacklistedUser.moderator}`,
+                },
+              ],
+              thumbnail: {
+                url: interaction.client.user.displayAvatarURL(),
+              },
+            },
+          ],
+          ephemeral: true,
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  type: 2,
+                  style: 5,
+                  url: "https://discord.gg/wuETgs5mSa",
+                  label: "Support",
+                  emoji: "💬",
+                },
+              ],
+            },
+          ],
+        });
+      }
+
       await command.execute(interaction);
+      const channel = await interaction.client.channels.fetch(
+        "1223740235070967878"
+      );
+      if (interaction.guild) {
+        channel.send({
+          embeds: [
+            {
+              color: 0x6666ff,
+              author: {
+                text: `${interaction.user.username} - ${interaction.user.id}`,
+                icon_url: interaction.user.displayAvatarURL(),
+              },
+              description: `\`${interaction.commandName}\` in **${interaction.guild.name} - ${interaction.guild.id}**`,
+            },
+          ],
+        });
+      } else {
+        channel.send({
+          embeds: [
+            {
+              color: 0x6666ff,
+              author: {
+                text: `${interaction.user.username} - ${interaction.user.id}`,
+                icon_url: interaction.user.displayAvatarURL(),
+              },
+              description: `\`${interaction.commandName}\` in **DMs**.`,
+            },
+          ],
+        });
+      }
       console.log(
         `${interaction.user.username} (${interaction.user.id}) - Executed /${interaction.commandName}`
       );
@@ -62,7 +150,10 @@ module.exports = {
       console.error(error);
       if (interaction.replied || interaction.deferred) {
         return interaction.followUp({
-          content: "There was an error while executing this command!",
+          content:
+            interaction.locale === "fr"
+              ? `Une erreur est survenue pendant l'exécution de la commande.`
+              : "There was an error while executing this command.",
           ephemeral: true,
         });
       } else {

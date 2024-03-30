@@ -2,6 +2,7 @@ const { ApplicationCommandOptionType } = require("discord.js");
 const GuildConfig = require("../../schemas/guildConfig");
 const UserPreferences = require("../../schemas/userPreferences");
 const axios = require("axios");
+const CommandCounter = require("../../schemas/commandCounter");
 
 module.exports = {
   cooldown: 5,
@@ -33,6 +34,12 @@ module.exports = {
     ],
   },
   async execute(interaction) {
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.hug.used += 1;
+    await commandCounter.save();
     let apiUrl = `https://nekos.life/api/v2/img/hug`;
     let user = interaction.options.getUser("user");
     await interaction.deferReply();

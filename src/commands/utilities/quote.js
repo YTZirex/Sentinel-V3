@@ -1,6 +1,7 @@
 const axios = require("axios");
 const { Language, TranslationParameters, translate } = require("deepl-client");
 const { ApplicationCommandOptionType } = require("discord.js");
+const CommandCounter = require("../../schemas/commandCounter");
 module.exports = {
   premium: false,
   dev: false,
@@ -120,6 +121,12 @@ module.exports = {
   },
   async execute(interaction) {
     const category = interaction.options.getString("category");
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.quote.used += 1;
+    await commandCounter.save();
     await interaction.deferReply();
     const quoteData = await fetchInspirationalQuote(category);
     if (quoteData) {

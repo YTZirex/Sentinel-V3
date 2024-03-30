@@ -1,7 +1,7 @@
 const { ApplicationCommandOptionType } = require("discord.js");
 const BlacklistedUser = require("../../schemas/blacklistedUser");
 const PremiumUser = require("../../schemas/premiumUser");
-
+const CommandCounter = require("../../schemas/commandCounter");
 module.exports = {
   data: {
     name: "userinfo",
@@ -34,8 +34,65 @@ module.exports = {
   dev: false,
   async execute(interaction) {
     let target = interaction.options.getUser("user") || interaction.user;
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.userInfo.used += 1;
+    await commandCounter.save();
     await interaction.deferReply();
-    if (interaction.guild === null) {
+    if (interaction.guild) {
+      let fetchedMember = await target.fetch();
+      return interaction.editReply({
+        embeds: [
+          {
+            color: 0x6666ff,
+            thumbnail: {
+              url:
+                target.displayAvatarURL() ||
+                interaction.client.user.displayAvatarURL(),
+            },
+            title:
+              interaction.locale === "fr"
+                ? `Prof3il de ${target.username}`
+                : `${target.username}'s pro3file`,
+            description: `__**${
+              interaction.locale === "fr"
+                ? "Informations Utilisateur"
+                : "User Informations"
+            }**__
+                  > **ID:** ${target.id}
+                  > **Bot:** ${target.bot ? "✅" : "❌"}
+                  > **${
+                    interaction.locale === "fr"
+                      ? "Compte crée"
+                      : "Account Created"
+                  }:** <t:${(target.createdTimestamp / 1000).toFixed(0)}:R>
+                  > **Sentinel Premium:** ${await isPremium(target.id)}
+                  > **Sentinel Blacklist:** ${await isBlacklisted(target.id)}
+                  
+                  __**${
+                    interaction.locale === "fr"
+                      ? "Informations Membre"
+                      : "Member Informations"
+                  }**__
+                  > **${
+                    interaction.locale === "fr" ? "Pseudonyme" : "Nickname"
+                  }:** ${target.nickname || target.username}
+                  > **${interaction.locale === "fr" ? "Rôles" : "Roles"} [${
+              fetchedMember.roles.cache.size - 1
+            }]**: ${
+              fetchedMember.roles.cache
+                .map((r) => r)
+                .join(", ")
+                .replace("@everyone", "") || interaction.locale === "fr"
+                ? "Aucun"
+                : "None"
+            }`,
+          },
+        ],
+      });
+    } else {
       return interaction.editReply({
         embeds: [
           {
@@ -65,56 +122,6 @@ module.exports = {
         ],
       });
     }
-    let fetchedMember = await target.fetch();
-    return interaction.editReply({
-      embeds: [
-        {
-          color: 0x6666ff,
-          thumbnail: {
-            url:
-              target.displayAvatarURL() ||
-              interaction.client.user.displayAvatarURL(),
-          },
-          title:
-            interaction.locale === "fr"
-              ? `Prof3il de ${target.username}`
-              : `${target.username}'s pro3file`,
-          description: `__**${
-            interaction.locale === "fr"
-              ? "Informations Utilisateur"
-              : "User Informations"
-          }**__
-                > **ID:** ${target.id}
-                > **Bot:** ${target.bot ? "✅" : "❌"}
-                > **${
-                  interaction.locale === "fr"
-                    ? "Compte crée"
-                    : "Account Created"
-                }:** <t:${(target.createdTimestamp / 1000).toFixed(0)}:R>
-                > **Sentinel Premium:** ${await isPremium(target.id)}
-                > **Sentinel Blacklist:** ${await isBlacklisted(target.id)}
-                
-                __**${
-                  interaction.locale === "fr"
-                    ? "Informations Membre"
-                    : "Member Informations"
-                }**__
-                > **${
-                  interaction.locale === "fr" ? "Pseudonyme" : "Nickname"
-                }:** ${target.nickname || target.username}
-                > **${interaction.locale === "fr" ? "Rôles" : "Roles"} [${
-            fetchedMember.roles.cache.size - 1
-          }]**: ${
-            fetchedMember.roles.cache
-              .map((r) => r)
-              .join(", ")
-              .replace("@everyone", "") || interaction.locale === "fr"
-              ? "Aucun"
-              : "None"
-          }`,
-        },
-      ],
-    });
   },
 };
 

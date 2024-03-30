@@ -1,6 +1,7 @@
 const GuildConfig = require("../../schemas/guildConfig");
 const UserPreferences = require("../../schemas/userPreferences");
-const axios = require('axios');
+const axios = require("axios");
+const CommandCounter = require("../../schemas/commandCounter");
 
 module.exports = {
   data: {
@@ -19,6 +20,12 @@ module.exports = {
   dev: false,
   cooldown: 10,
   async execute(interaction) {
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.joke.used += 1;
+    await commandCounter.save();
     await interaction.deferReply();
     try {
       let response = await axios.get(
@@ -71,10 +78,7 @@ module.exports = {
             embeds: [
               {
                 color: 0xff6666,
-                title:
-                  interaction.locale === "fr"
-                    ? "Oups"
-                    : "Oops",
+                title: interaction.locale === "fr" ? "Oups" : "Oops",
                 description:
                   interaction.locale === "fr"
                     ? "Une erreur est survenue lors de la récupération de la blague. Veuillez réessayer plus tard."
@@ -88,8 +92,7 @@ module.exports = {
           embeds: [
             {
               color: 0xff6666,
-              title:
-                interaction.locale === "fr" ? "Oups" : "Oops",
+              title: interaction.locale === "fr" ? "Oups" : "Oops",
               description:
                 interaction.locale === "fr"
                   ? "Une erreur est survenue lors de la récupération de la blague. Veuillez réessayer plus tard."
@@ -103,8 +106,7 @@ module.exports = {
         embeds: [
           {
             color: 0xff6666,
-            title:
-              interaction.locale === "fr" ? "Oups" : "Oops",
+            title: interaction.locale === "fr" ? "Oups" : "Oops",
             description:
               interaction.locale === "fr"
                 ? "Une erreur est survenue lors de la récupération de la blague. Veuillez réessayer plus tard."

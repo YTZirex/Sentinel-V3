@@ -2,7 +2,7 @@ const ms = require("ms");
 const os = require("os");
 const { version, dependencies } = require(`${process.cwd()}/package.json`);
 const { botVersion } = require("../../../data/config.json");
-
+const CommandCounter = require("../../schemas/commandCounter");
 module.exports = {
   cooldown: 3,
   premium: false,
@@ -20,6 +20,12 @@ module.exports = {
     contexts: [0, 1, 2],
   },
   async execute(interaction) {
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.botInfo.used += 1;
+    await commandCounter.save();
     return interaction.reply({
       embeds: [
         {
