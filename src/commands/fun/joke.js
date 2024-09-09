@@ -1,6 +1,7 @@
 const GuildConfig = require("../../schemas/guildConfig");
 const UserPreferences = require("../../schemas/userPreferences");
-const axios = require('axios');
+const axios = require("axios");
+const CommandCounter = require("../../schemas/commandCounter");
 
 module.exports = {
   data: {
@@ -19,20 +20,16 @@ module.exports = {
   dev: false,
   cooldown: 10,
   async execute(interaction) {
-    let preferences;
-    if (interaction.guild == null) {
-      preferences = await UserPreferences.findOne({
-        id: interaction.user.id,
-      });
-    } else {
-      preferences = await GuildConfig.findOne({
-        id: interaction.guild.id,
-      });
-    }
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.joke.used += 1;
+    await commandCounter.save();
     await interaction.deferReply();
     try {
       let response = await axios.get(
-        preferences && preferences.language === "fr"
+        interaction.locale === "fr"
           ? "https://v2.jokeapi.dev/joke/Any?lang=fr"
           : "https://v2.jokeapi.dev/joke/Any"
       );
@@ -50,7 +47,7 @@ module.exports = {
                 },
                 footer: {
                   text:
-                    preferences && preferences.language === "fr"
+                    interaction.locale === "fr"
                       ? `Blague #${jokeData.id} - ${jokeData.category}`
                       : `Joke ${jokeData.id} - ${jokeData.category}`,
                 },
@@ -69,7 +66,7 @@ module.exports = {
                 },
                 footer: {
                   text:
-                    preferences && preferences.language === "fr"
+                    interaction.locale === "fr"
                       ? `Blague #${jokeData.id} - ${jokeData.category}`
                       : `Joke ${jokeData.id} - ${jokeData.category}`,
                 },
@@ -81,12 +78,9 @@ module.exports = {
             embeds: [
               {
                 color: 0xff6666,
-                title:
-                  preferences && preferences.language === "fr"
-                    ? "Oups"
-                    : "Oops",
+                title: interaction.locale === "fr" ? "Oups" : "Oops",
                 description:
-                  preferences && preferences.language === "fr"
+                  interaction.locale === "fr"
                     ? "Une erreur est survenue lors de la récupération de la blague. Veuillez réessayer plus tard."
                     : "An error occurred while retrieving the joke. Please try again later.",
               },
@@ -98,10 +92,9 @@ module.exports = {
           embeds: [
             {
               color: 0xff6666,
-              title:
-                preferences && preferences.language === "fr" ? "Oups" : "Oops",
+              title: interaction.locale === "fr" ? "Oups" : "Oops",
               description:
-                preferences && preferences.language === "fr"
+                interaction.locale === "fr"
                   ? "Une erreur est survenue lors de la récupération de la blague. Veuillez réessayer plus tard."
                   : "An error occurred while retrieving the joke. Please try again later.",
             },
@@ -113,10 +106,9 @@ module.exports = {
         embeds: [
           {
             color: 0xff6666,
-            title:
-              preferences && preferences.language === "fr" ? "Oups" : "Oops",
+            title: interaction.locale === "fr" ? "Oups" : "Oops",
             description:
-              preferences && preferences.language === "fr"
+              interaction.locale === "fr"
                 ? "Une erreur est survenue lors de la récupération de la blague. Veuillez réessayer plus tard."
                 : "An error occurred while retrieving the joke. Please try again later.",
           },

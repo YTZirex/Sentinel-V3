@@ -1,8 +1,7 @@
 const axios = require("axios");
 const { Language, TranslationParameters, translate } = require("deepl-client");
-const GuildConfig = require("../../schemas/guildConfig");
-const UserPreferences = require("../../schemas/userPreferences");
 const { ApplicationCommandOptionType } = require("discord.js");
+const CommandCounter = require("../../schemas/commandCounter");
 module.exports = {
   premium: false,
   dev: false,
@@ -121,21 +120,17 @@ module.exports = {
     ],
   },
   async execute(interaction) {
-    let preferences;
-    if (interaction.guild == null) {
-      preferences = await UserPreferences.findOne({
-        id: interaction.user.id,
-      });
-    } else {
-      preferences = await GuildConfig.findOne({
-        id: interaction.guild.id,
-      });
-    }
     const category = interaction.options.getString("category");
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.quote.used += 1;
+    await commandCounter.save();
     await interaction.deferReply();
     const quoteData = await fetchInspirationalQuote(category);
     if (quoteData) {
-      if (preferences && preferences.language === "fr") {
+      if (interaction.locale === "fr") {
         try {
           let translation;
 

@@ -1,5 +1,4 @@
-const GuildConfig = require("../../schemas/guildConfig");
-const UserPreferences = require("../../schemas/userPreferences");
+const CommandCounter = require("../../schemas/commandCounter");
 
 module.exports = {
   data: {
@@ -15,16 +14,12 @@ module.exports = {
   dev: false,
   premium: false,
   async execute(interaction) {
-    let preferences;
-    if (interaction.guild == null) {
-      preferences = await UserPreferences.findOne({
-        id: interaction.user.id,
-      });
-    } else {
-      preferences = await GuildConfiguildConfig.findOne({
-        id: interaction.guild.id,
-      });
-    }
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.ping.used += 1;
+    await commandCounter.save();
     const start = performance.now();
     const apiLatency = interaction.client.ws.ping;
 
@@ -38,11 +33,11 @@ module.exports = {
       embeds: [
         {
           title:
-            preferences & (preferences.language === "fr")
+            interaction.locale === "fr"
               ? `Latences des services de **${interaction.client.user.username}**`
               : `**${interaction.client.user.username}**'s services latencies`,
           description:
-            preferences & (preferences.language === "fr")
+            interaction.locale === "fr"
               ? `> \`⏱️\` La latence du **Bot** est \`${botPing}ms\`\n
                 > \`🌐\` La latence de l'**API Discord** est \`${apiLatency}ms\`\n
                 > \`💾\` La latence de la **Base de données** est \`${mongooseLatency}ms\``
@@ -56,7 +51,7 @@ module.exports = {
           },
           footer: {
             text:
-              preferences & (preferences.language === "fr")
+              interaction.locale === "fr"
                 ? `Demandé par ${interaction.user.username}`
                 : `Requested by ${interaction.user.username}`,
             icon_url: interaction.client.user.displayAvatarURL(),

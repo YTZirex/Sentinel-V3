@@ -2,7 +2,7 @@ const { ApplicationCommandOptionType } = require("discord.js");
 const GuildConfig = require("../../schemas/guildConfig");
 const UserPreferences = require("../../schemas/userPreferences");
 const axios = require("axios");
-
+const CommandCounter = require("../../schemas/commandCounter");
 module.exports = {
   cooldown: 5,
   premium: false,
@@ -33,16 +33,12 @@ module.exports = {
     ],
   },
   async execute(interaction) {
-    let preferences;
-    if (interaction.guild == null) {
-      preferences = await UserPreferences.findOne({
-        id: interaction.user.id,
-      });
-    } else {
-      preferences = await GuildConfig.findOne({
-        id: interaction.guild.id,
-      });
-    }
+    let commandCounter = await CommandCounter.findOne({
+      global: 1,
+    });
+
+    commandCounter.kiss.used += 1;
+    await commandCounter.save();
     let apiUrl = `https://nekos.life/api/v2/img/kiss`;
     let user = interaction.options.getUser("user");
     await interaction.deferReply();
@@ -54,7 +50,7 @@ module.exports = {
       if (!user || interaction.user.id === user.id)
         return interaction.editReply({
           content:
-            preferences && preferences.language === "fr"
+            interaction.locale === "fr"
               ? `${interaction.user} s'est embrassé lui même :pensive:`
               : `${interaction.user} kissed himself :pensive:`,
           embeds: [
@@ -68,7 +64,7 @@ module.exports = {
 
       return interaction.editReply({
         content:
-          preferences && preferences.language === "fr"
+          interaction.locale === "fr"
             ? `${interaction.user} a embrassé ${user}`
             : `${interaction.user} kissed ${user}`,
         embeds: [
@@ -82,7 +78,7 @@ module.exports = {
     } catch (err) {
       console.log(err);
       return interaction.editReply(
-        preferences && preferences.language === "fr"
+        interaction.locale === "fr"
           ? "Une erreur est survenue en essayant d'embrasser."
           : `An error occured while trying to kiss.`
       );
