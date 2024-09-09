@@ -17,8 +17,12 @@
     "colors": "^1.4.0",
     "deepl-client": "^1.1.4",
     "discord-arts": "^0.5.8",
+<<<<<<< HEAD
     "discord-gamecord": "^4.4.2",
     "discord-tictactoe": "^4.2.0",
+=======
+    "discord-gamecord": "^4.4.1",
+>>>>>>> 660856864274a2a864adee5c663179c5bd6a34f6
     "discord.js": "^14.14.1",
     "mongoose": "^8.2.4",
     "weather-js": "^2.0.0"
