@@ -1,6 +1,6 @@
 {
   "name": "sentinel-v3",
-  "version": "1.0.0",
+  "version": "3.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -17,10 +17,18 @@
     "colors": "^1.4.0",
     "deepl-client": "^1.1.4",
     "discord-arts": "^0.5.8",
-    "discord-gamecord": "^4.4.1",
+<<<<<<< HEAD
+    "discord-gamecord": "^4.4.2",
     "discord-tictactoe": "^4.2.0",
+=======
+    "discord-gamecord": "^4.4.1",
+<<<<<<< HEAD
+    "discord-tictactoe": "^4.2.0",
+=======
+>>>>>>> 660856864274a2a864adee5c663179c5bd6a34f6
+>>>>>>> 988b432d60e594fd86fd3f6ae9ef337abe822970
     "discord.js": "^14.14.1",
-    "mongoose": "^8.2.2",
+    "mongoose": "^8.2.4",
     "weather-js": "^2.0.0"
   }
 }

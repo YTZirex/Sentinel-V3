@@ -120,10 +120,23 @@ module.exports = {
             {
               color: 0x6666ff,
               author: {
+<<<<<<< HEAD
                 name: `${interaction.user.username} - ${interaction.user.id}`,
                 icon_url: interaction.user.displayAvatarURL(),
               },
               thumbnail: { url: interaction.guild.iconURL() },
+=======
+<<<<<<< HEAD
+                name: `${interaction.user.username} - ${interaction.user.id}`,
+                icon_url: interaction.user.displayAvatarURL(),
+              },
+              thumbnail: { url: interaction.guild.iconURL() },
+=======
+                text: `${interaction.user.username} - ${interaction.user.id}`,
+                icon_url: interaction.user.displayAvatarURL(),
+              },
+>>>>>>> 660856864274a2a864adee5c663179c5bd6a34f6
+>>>>>>> 988b432d60e594fd86fd3f6ae9ef337abe822970
               description: `\`${interaction.commandName}\` in **${interaction.guild.name} - ${interaction.guild.id}**`,
             },
           ],
@@ -134,10 +147,23 @@ module.exports = {
             {
               color: 0x6666ff,
               author: {
+<<<<<<< HEAD
                 name: `${interaction.user.username} - ${interaction.user.id}`,
                 icon_url: interaction.user.displayAvatarURL(),
               },
               thumbnail: { url: interaction.user.displayAvatarURL() },
+=======
+<<<<<<< HEAD
+                name: `${interaction.user.username} - ${interaction.user.id}`,
+                icon_url: interaction.user.displayAvatarURL(),
+              },
+              thumbnail: { url: interaction.user.displayAvatarURL() },
+=======
+                text: `${interaction.user.username} - ${interaction.user.id}`,
+                icon_url: interaction.user.displayAvatarURL(),
+              },
+>>>>>>> 660856864274a2a864adee5c663179c5bd6a34f6
+>>>>>>> 988b432d60e594fd86fd3f6ae9ef337abe822970
               description: `\`${interaction.commandName}\` in **DMs**.`,
             },
           ],

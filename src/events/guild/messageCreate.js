@@ -1,4 +1,5 @@
 const { Events } = require("discord.js");
+const interactionCreate = require("./interactionCreate");
 module.exports = {
   name: Events.MessageCreate,
   once: false,
