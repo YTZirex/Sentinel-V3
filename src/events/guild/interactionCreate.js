@@ -120,9 +120,10 @@ module.exports = {
             {
               color: 0x6666ff,
               author: {
-                text: `${interaction.user.username} - ${interaction.user.id}`,
+                name: `${interaction.user.username} - ${interaction.user.id}`,
                 icon_url: interaction.user.displayAvatarURL(),
               },
+              thumbnail: { url: interaction.guild.iconURL() },
               description: `\`${interaction.commandName}\` in **${interaction.guild.name} - ${interaction.guild.id}**`,
             },
           ],
@@ -133,9 +134,10 @@ module.exports = {
             {
               color: 0x6666ff,
               author: {
-                text: `${interaction.user.username} - ${interaction.user.id}`,
+                name: `${interaction.user.username} - ${interaction.user.id}`,
                 icon_url: interaction.user.displayAvatarURL(),
               },
+              thumbnail: { url: interaction.user.displayAvatarURL() },
               description: `\`${interaction.commandName}\` in **DMs**.`,
             },
           ],

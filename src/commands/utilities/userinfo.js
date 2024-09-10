@@ -1,4 +1,7 @@
-const { ApplicationCommandOptionType } = require("discord.js");
+const {
+  ApplicationCommandOptionType,
+  PermissionsBitField,
+} = require("discord.js");
 const BlacklistedUser = require("../../schemas/blacklistedUser");
 const PremiumUser = require("../../schemas/premiumUser");
 const CommandCounter = require("../../schemas/commandCounter");
@@ -37,12 +40,11 @@ module.exports = {
     let commandCounter = await CommandCounter.findOne({
       global: 1,
     });
-
     commandCounter.userInfo.used += 1;
     await commandCounter.save();
     await interaction.deferReply();
     if (interaction.guild) {
-      let fetchedMember = await target.fetch();
+      let fetchedMember = interaction.guild.members.cache.get(target.id);
       return interaction.editReply({
         embeds: [
           {
@@ -54,41 +56,26 @@ module.exports = {
             },
             title:
               interaction.locale === "fr"
-                ? `Prof3il de ${target.username}`
-                : `${target.username}'s pro3file`,
+                ? `Profil de ${target.username}`
+                : `${target.username}'s profile`,
             description: `__**${
               interaction.locale === "fr"
                 ? "Informations Utilisateur"
                 : "User Informations"
             }**__
-                  > **ID:** ${target.id}
-                  > **Bot:** ${target.bot ? "✅" : "❌"}
-                  > **${
-                    interaction.locale === "fr"
-                      ? "Compte crée"
-                      : "Account Created"
-                  }:** <t:${(target.createdTimestamp / 1000).toFixed(0)}:R>
-                  > **Sentinel Premium:** ${await isPremium(target.id)}
-                  > **Sentinel Blacklist:** ${await isBlacklisted(target.id)}
-                  
-                  __**${
-                    interaction.locale === "fr"
-                      ? "Informations Membre"
-                      : "Member Informations"
-                  }**__
-                  > **${
-                    interaction.locale === "fr" ? "Pseudonyme" : "Nickname"
-                  }:** ${target.nickname || target.username}
-                  > **${interaction.locale === "fr" ? "Rôles" : "Roles"} [${
-              fetchedMember.roles.cache.size - 1
-            }]**: ${
-              fetchedMember.roles.cache
-                .map((r) => r)
-                .join(", ")
-                .replace("@everyone", "") || interaction.locale === "fr"
-                ? "Aucun"
-                : "None"
-            }`,
+            > **ID:** ${target.id}
+            > **Bot:** ${target.bot ? "✅" : "❌"}
+            > **${
+              interaction.locale === "fr" ? "Compte crée" : "Account Created"
+            }:** <t:${(target.createdTimestamp / 1000).toFixed(0)}:R>
+            > **Sentinel Premium:** ${await isPremium(target.id)}
+            > **Sentinel Blacklist:** ${await isBlacklisted(target.id)}
+            
+            __**${
+              interaction.locale === "fr"
+                ? "Informations Membre"
+                : "Member Informations"
+            }**__`,
           },
         ],
       });
@@ -105,7 +92,7 @@ module.exports = {
             title:
               interaction.locale === "fr"
                 ? `Profil de ${target.username}`
-                : `${target.username}'s profffile`,
+                : `${target.username}'s profile`,
             description: `__**${
               interaction.locale === "fr"
                 ? "Informations Utilisateur"
@@ -116,8 +103,8 @@ module.exports = {
             > **${
               interaction.locale === "fr" ? "Compte crée" : "Account Created"
             }:** <t:${(target.createdTimestamp / 1000).toFixed(0)}:R>
-            > **Sentinel Premium:** ${isPremium(target.id)}
-            > **Sentinel Blacklist:** ${isBlacklisted(target.id)}`,
+            > **Sentinel Premium:** ${await isPremium(target.id)}
+            > **Sentinel Blacklist:** ${await isBlacklisted(target.id)}`,
           },
         ],
       });
@@ -130,8 +117,8 @@ async function isBlacklisted(userId) {
     id: userId,
   });
 
-  if (blacklistedUser && blacklistedUser.blacklisted === false) return "❌";
-  else return "✅";
+  if (blacklistedUser && blacklistedUser.blacklisted === true) return "✅";
+  else return "❌";
 }
 
 async function isPremium(userId) {
