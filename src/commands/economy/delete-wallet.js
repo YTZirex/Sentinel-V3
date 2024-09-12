@@ -46,9 +46,72 @@ module.exports = {
                     color: 0xff6666,
                     thumbnail: {
                         url: interaction.client.user.displayAvatarURL()
-                    }
+                    },
+                    description: interaction.locale === 'fr' ? "Vous ne possédez pas de portefeuille" : "You do not own a wallet"
+                }
+            ]
+        });
+
+        if (confirm == false) return interaction.reply({
+            ephemeral: true,
+            embeds: [
+                {
+                    title: interaction.locale === 'fr' ? "Oups!" : "Oops!",
+                    color: 0xff6666,
+                    thumbnail: {
+                        url: interaction.client.user.displayAvatarURL()
+                    },
+                    description: interaction.locale === 'fr' ? "Vous devez autoriser la confirmation" : "You must authorizte the confirmation"
                 }
             ]
         })
+
+        if (economyWallet && confirm == true) {
+            try {
+                Economy.findOneAndDelete({
+                    user: interaction.user.id
+                });
+                return interaction.reply({
+                    embeds: [
+                        {
+                            color: 0x33cc99,
+                            title: interaction.locale === 'fr' ? "Succès!" : "Success!",
+                            thumbnail: {
+                                url: interaction.user.displayAvatarURL()
+                            },
+                            description: interaction.locale === 'fr' ? "Votre portefeuille a été supprimé avec succès" : "Your wallet was successfully deleted"
+                        }
+                    ]
+                })
+            } catch (err) {
+                return interaction.reply({
+                    ephemeral: true,
+                    embeds: [
+                        {
+                            title: interaction.locale === 'fr' ? "Oups!" : "Oops!",
+                            color: 0xff6666,
+                            thumbnail: {
+                                url: interaction.client.user.displayAvatarURL()
+                            },
+                            description: interaction.locale === 'fr' ? "Une erreur est survenue" : "An error has occured"
+                        }
+                    ]
+                })
+            }
+        } else {
+            return interaction.reply({
+                ephemeral: true,
+                embeds: [
+                    {
+                        title: interaction.locale === 'fr' ? "Oups!" : "Oops!",
+                        color: 0xff6666,
+                        thumbnail: {
+                            url: interaction.client.user.displayAvatarURL()
+                        },
+                        description: interaction.locale === 'fr' ? "Une erreur est survenue" : "An error has occured"
+                    }
+                ]
+            })
+        }
     }
 }
